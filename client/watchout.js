@@ -1,6 +1,5 @@
 // start slingin' some d3 here.
 
-
 var gameOptions = {
   height: 450,
   width: 700,
@@ -13,10 +12,10 @@ var gameStats = {
   bestScore: 0
 };
 
-var axes = {
-  x: d3.scale.linear().domain([0, 100]).range([0, gameOptions.width]),
-  y: d3.scale.linear().domain([0, 100]).range([0, gameOptions.height])
-};
+// var axes = {
+  // x: d3.scale.linear().domain([0, 100]).range([0, gameOptions.width]),
+//   y: d3.scale.linear().domain([0, 100]).range([0, gameOptions.height])
+// };
 
 var container = d3.select('.container');
 container.style('margin', '50px');
@@ -48,8 +47,8 @@ var createEnemies = function() {
   return _.map(enemies, function(enemy, index) {
     return {
       id: index,
-      x: Math.random() * 100,
-      y: Math.random() * 100
+      x: Math.random() * gameOptions.width,
+      y: Math.random() * gameOptions.height
     };
   });
 };
@@ -62,8 +61,8 @@ var render = function(enemy_data) {
 
   enemies.transition()
     .duration(1500)
-    .attr('cx', function(enemy) {return axes.x(enemy.x);})
-    .attr('cy', function(enemy) {return axes.y(enemy.y);});
+    .attr('cx', function(enemy) {return enemy.x;})
+    .attr('cy', function(enemy) {return enemy.y;});
     
   enemies.enter()
     .append('svg:circle')
@@ -72,22 +71,36 @@ var render = function(enemy_data) {
     .attr('cy', gameOptions.height/2)
     .transition()
     .duration(500)
-    .attr('cx', function(enemy) {return axes.x(enemy.x);})
-    .attr('cy', function(enemy) {return axes.y(enemy.y);})
+    .attr('cx', function(enemy) {return enemy.x;})
+    .attr('cy', function(enemy) {return enemy.y;})
     .attr('r', 10)
     .attr('fill', 'black');
 
 };
 
 //collision detection
+var collisionDetect = function() {
+
+  var enemies = gameBoard.selectAll('circle.enemy')
+    .each(function(d, i) {
+      
+      var playerPosX = player.x + 10;
+      var playerPosY = player.y + 10;
+
+      var distance = Math.sqrt(((playerPosX - d.x) * (playerPosX - d.x)) + ((playerPosY - d.y) * (playerPosY - d.y)));
+      
+      if(distance < 22) {
+        console.log('collision!');
+      }
+    });
+};
+
 
 //render screen with enemies and player
-
-
 render(createEnemies());
 player.render(gameBoard);
 
-setInterval(function(){
+setTimeout(function(){
   return render(createEnemies());
 }, 2000);
  
@@ -100,11 +113,8 @@ var increaseScore = function() {
 
 setInterval(function() {
   increaseScore();
-  // collisio
+  collisionDetect();
 }, 50);
-
-
-
 
 
 
