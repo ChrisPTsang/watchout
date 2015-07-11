@@ -4,18 +4,16 @@ var gameOptions = {
   height: 450,
   width: 700,
   nEnemies: 30,
-  padding: 20
+  padding: 20,
+  canCollide: true
 };
 
 var gameStats = {
   score: 0,
-  bestScore: 0
+  bestScore: 0,
+  collisions: 0
 };
 
-// var axes = {
-  // x: d3.scale.linear().domain([0, 100]).range([0, gameOptions.width]),
-//   y: d3.scale.linear().domain([0, 100]).range([0, gameOptions.height])
-// };
 
 var container = d3.select('.container');
 container.style('margin', '50px');
@@ -37,6 +35,11 @@ var updateBestScore = function () {
 
   container.select('.high span')
     .text(gameStats.bestScore.toString());
+};
+
+var updateCollisions = function() {
+  container.select('.collisions span')
+    .text(gameStats.collisions.toString());
 };
 
 //create enemies
@@ -90,17 +93,27 @@ var collisionDetect = function() {
       var distance = Math.sqrt(((playerPosX - d.x) * (playerPosX - d.x)) + ((playerPosY - d.y) * (playerPosY - d.y)));
       
       if(distance < 22) {
-        console.log('collision!');
+        updateBestScore();
+        gameStats.score = 0;
+       
+        if(gameOptions.canCollide === true) {
+          gameStats.collisions++;
+          updateCollisions();
+          gameOptions.canCollide = false;
+          setTimeout(function() {
+            gameOptions.canCollide = true;
+          }, 800);
+        }
+
       }
     });
 };
-
 
 //render screen with enemies and player
 render(createEnemies());
 player.render(gameBoard);
 
-setTimeout(function(){
+setInterval(function(){
   return render(createEnemies());
 }, 2000);
  
