@@ -65,7 +65,6 @@ var render = function(enemy_data) {
     .attr('cx', function(enemy) {return axes.x(enemy.x);})
     .attr('cy', function(enemy) {return axes.y(enemy.y);});
     
-    
   enemies.enter()
     .append('svg:circle')
     .attr('class', 'enemy')
@@ -78,9 +77,9 @@ var render = function(enemy_data) {
     .attr('r', 10)
     .attr('fill', 'black');
 
-
-
 };
+
+//collision detection
 
 //render screen with enemies and player
 
@@ -88,7 +87,9 @@ var render = function(enemy_data) {
 render(createEnemies());
 player.render(gameBoard);
 
-setInterval(function(){return render(createEnemies());}, 2000);
+setInterval(function(){
+  return render(createEnemies());
+}, 2000);
  
 //update score based on time elapsed without collision
 
@@ -97,7 +98,10 @@ var increaseScore = function() {
   updateScore();
 };
 
-setInterval(increaseScore, 50);
+setInterval(function() {
+  increaseScore();
+  // collisio
+}, 50);
 
 
 
