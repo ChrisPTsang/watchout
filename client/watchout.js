@@ -1,5 +1,6 @@
 // start slingin' some d3 here.
 
+
 var gameOptions = {
   height: 450,
   width: 700,
@@ -25,16 +26,17 @@ var gameBoard = d3.select('.container').append('svg')
   .attr('height', gameOptions.height)
   .style('background-color', 'white');
 
+var player = new Player(gameOptions.width, gameOptions.height);
 
 var updateScore = function() {
-  container.select('.current')
+  container.select('.current span')
     .text(gameStats.score.toString());
 };
 
 var updateBestScore = function () {
   gameStats.bestScore = gameStats.bestScore > gameStats.score ? gameStats.bestScore : gameStats.score;
 
-  container.select('.high')
+  container.select('.high span')
     .text(gameStats.bestScore.toString());
 };
 
@@ -52,6 +54,7 @@ var createEnemies = function() {
   });
 };
 
+//render screen
 var render = function(enemy_data) {
   
   // console.log(enemy_data.length);
@@ -74,18 +77,28 @@ var render = function(enemy_data) {
     .attr('cy', function(enemy) {return axes.y(enemy.y);})
     .attr('r', 10)
     .attr('fill', 'black');
+
+
+
 };
 
-var play = function() {
+//render screen with enemies and player
 
 
-  render(createEnemies());
-  // console.log('-------');
-  setInterval(function(){return render(createEnemies());}, 2000);
-  // setInterval(gameTurn, 2000);        
+render(createEnemies());
+player.render(gameBoard);
+
+setInterval(function(){return render(createEnemies());}, 2000);
+ 
+//update score based on time elapsed without collision
+
+var increaseScore = function() {
+  gameStats.score += 1;
+  updateScore();
 };
 
-play();
+setInterval(increaseScore, 50);
+
 
 
 
