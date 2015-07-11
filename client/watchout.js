@@ -13,18 +13,18 @@ var gameStats = {
 }
 
 var axes = {
-  x: d3.scale.linear().domain([0, 100]).range([0, gameOptions.width]),
-  y: d3.scale.linear().domain([0, 100]).range([0, gameOptions.height])
+  // x: d3.scale.linear().domain([0, 100]).range([0, gameOptions.width]),
+  // y: d3.scale.linear().domain([0, 100]).range([0, gameOptions.height])
 };
 
 var container = d3.select('.container');
-
-var gameBoard = container.append('svg')
+container.style('margin', '50px');
+ 
+var gameBoard = d3.select('.container').append('svg:svg')
   .attr('width', gameOptions.width)
   .attr('height', gameOptions.height)
   .style('background-color', 'black');
 
-container.style('margin', '50px');
 
 var updateScore = function() {
   container.select('.current')
@@ -39,43 +39,18 @@ var updateBestScore = function () {
 };
 
 
-//Player constructor
-var Player = function() {
-  
-  this.path = 'm292,116l91,111l-187,-1l96,-110z';
-
-  this.fill = '#ff6600';
-  this.x = 0;
-  this.y = 0;
-  this.angle = 0;
-  this.r = 5;
-
-
-};
-
-Player.prototype.render = function(to) {
-  this.el = to.append('svg:path')
-    .attr('d', this.path)
-    .attr('fill', this.fill);
-
-  this.transform = {
-    x: this.gameOptions.width * 0.5,
-    y: this.gameOptions.height * 0.5
-  };
-
-  
-};
 
 
 //create enemies
 var createEnemies = function() {
+
   var enemies = _.range(0, gameOptions.nEnemies);
 
   return _.map(enemies, function(enemy, index) {
     return {
       id: index,
-      x: Math.random() * 100,
-      y: Math.random() * 100
+      x: Math.random() * gameOptions.width,
+      y: Math.random() * gameOptions.height
     };
   });
   
@@ -83,32 +58,38 @@ var createEnemies = function() {
 
 var render = function(enemy_data) {
   
-  console.log(enemy_data.length);
+  // console.log(enemy_data.length);
 
-  var enemies = gameBoard.selectAll('circle.enemy')
+  var enemies = gameBoard.selectAll('circle.enemy');
   // we don't understand this::::
-    .data(enemy_data, function(d) { return d.y; });
+    // .data(enemy_data, function(d) { 
+    //   // console.log(d);
+    //   return d.id;
+    // });
 
+  // console.log(enemies);
 
   enemies.enter()
     .append('svg:circle')
     .attr('class', 'enemy')
-    // .transition()
+    .transition().duration(500).attr('r', 50)
     .attr('cx', function(enemy) {
-      // console.log(axes.x(enemy.x));
-      return axes.x(enemy.x);
+      return enemy.x;
     })
     .attr('cy', function(enemy) {
-      // console.log(axes.y(enemy.y));
       // console.log(enemy);
-      return axes.y(enemy.y);
+      return enemy.y;
     })
     .attr('r', 20)
     .attr('fill', 'red');
+    // .transition()
+    // .duration(1000)
+    // .attr('fill', 'green');
 
-  enemies.exit()
-    .remove();
+  // enemies.exit()
+  //   .remove();
 
+  // return enemies.transition().duration(500).tweenstyle();
 };
 
 
@@ -121,15 +102,11 @@ var play = function() {
 
 
   gameTurn();
-  console.log('-------');
-  setInterval(gameTurn, 2000);        
+  // console.log('-------');
+  setTimeout(gameTurn, 2000);        
+  // setInterval(gameTurn, 2000);        
 
 
-  // render(createEnemies());
-
-  // window.setInterval(function() {
-  //   render(createEnemies());
-  // }, 2000); 
 };
 
 play();
