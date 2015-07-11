@@ -19,6 +19,7 @@ var container = d3.select('.container');
 container.style('margin', '50px');
  
 var gameBoard = d3.select('.container').append('svg')
+  .attr('class', 'game-board')
   .attr('width', gameOptions.width)
   .attr('height', gameOptions.height)
   .style('background-color', 'black');
@@ -64,8 +65,8 @@ var render = function(enemy_data) {
 
   enemies.transition()
     .duration(1500)
-    .attr('x', function(enemy) {return enemy.x;})
-    .attr('y', function(enemy) {return enemy.y;});
+    .attr('x', function(enemy) {return enemy.x})
+    .attr('y', function(enemy) {return enemy.y});
     
   enemies.enter()
     .append('svg:image')
@@ -77,43 +78,47 @@ var render = function(enemy_data) {
     .attr('y', gameOptions.height/2)
     .transition()
     .duration(500)
-    .attr('x', function(enemy) {return enemy.x;})
-    .attr('y', function(enemy) {return enemy.y;});
+    .attr('x', function(enemy) {return enemy.x})
+    .attr('y', function(enemy) {return enemy.y});
     // .attr('r', 0)
     // .append('svg:image')
     // .attr('fill', 'black');
 
 };
 
+var previousCollision = false;
 //collision detection
 var collisionDetect = function() {
+
+  var collision = false;
 
   var enemies = gameBoard.selectAll('image.enemy')
     .each(function(d, i) {
 
-      var playerPosX = player.x + 10;
-      var playerPosY = player.y + 10;
+      var playerPosX = player.x-15;
+      var playerPosY = player.y-10;
 
-      var enPosX = d.x + 6;
-      var enPoxY = d.y + 6;
+      var enPosX = d.x;
+      var enPoxY = d.y;
 
       var distance = Math.sqrt(((playerPosX - enPosX) * (playerPosX - enPosX)) + ((playerPosY - enPoxY) * (playerPosY - enPoxY)));
       
       if(distance < 22) {
-        updateBestScore();
-        gameStats.score = 0;
-       
+        gameBoard.style('background-color', 'red');
+
         if(gameOptions.canCollide === true) {
           console.log('collision!');
           gameStats.collisions++;
           updateCollisions();
+          updateBestScore();
+          gameStats.score = 0;
           gameOptions.canCollide = false;
           setTimeout(function() {
+            gameBoard.style('background-color', 'black');
             gameOptions.canCollide = true;
-          }, 800);
+          }, 500);
         }
-
-      }
+      } 
     });
 };
 
@@ -121,20 +126,32 @@ var collisionDetect = function() {
 render(createEnemies());
 player.render(gameBoard);
 
+
+gameBoard.on('mousemove', function() {
+  var loc = d3.mouse(this);
+  player.x = loc[0];
+  player.y = loc[1];
+
+  d3.select('.player').attr({
+    x: player.x-15,
+    y: player.y-15
+  });
+});
+
 setTimeout(function(){
   render(createEnemies());
 }, 2000);
  
 //update score based on time elapsed without collision
-
 var increaseScore = function() {
   gameStats.score += 1;
   updateScore();
 };
 
-setInterval(function() {
+d3.timer(collisionDetect);
+
+setTimeout(function() {
   increaseScore();
-  collisionDetect();
 }, 50);
 
 
