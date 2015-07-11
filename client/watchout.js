@@ -21,7 +21,7 @@ container.style('margin', '50px');
 var gameBoard = d3.select('.container').append('svg')
   .attr('width', gameOptions.width)
   .attr('height', gameOptions.height)
-  .style('background-color', 'white');
+  .style('background-color', 'black');
 
 var player = new Player(gameOptions.width, gameOptions.height);
 
@@ -60,43 +60,51 @@ var createEnemies = function() {
 var render = function(enemy_data) {
   
   // console.log(enemy_data.length);
-  var enemies = gameBoard.selectAll('circle.enemy').data(enemy_data);
+  var enemies = gameBoard.selectAll('image.enemy').data(enemy_data, function(d) { return d.id; });
 
   enemies.transition()
     .duration(1500)
-    .attr('cx', function(enemy) {return enemy.x;})
-    .attr('cy', function(enemy) {return enemy.y;});
+    .attr('x', function(enemy) {return enemy.x;})
+    .attr('y', function(enemy) {return enemy.y;});
     
   enemies.enter()
-    .append('svg:circle')
+    .append('svg:image')
     .attr('class', 'enemy')
-    .attr('cx', gameOptions.width/2)
-    .attr('cy', gameOptions.height/2)
+    .attr('xlink:href', 'asteroid.png')
+    .attr('height', 20)
+    .attr('width', 20)
+    .attr('x', gameOptions.width/2)
+    .attr('y', gameOptions.height/2)
     .transition()
     .duration(500)
-    .attr('cx', function(enemy) {return enemy.x;})
-    .attr('cy', function(enemy) {return enemy.y;})
-    .attr('r', 10)
-    .attr('fill', 'black');
+    .attr('x', function(enemy) {return enemy.x;})
+    .attr('y', function(enemy) {return enemy.y;});
+    // .attr('r', 0)
+    // .append('svg:image')
+    // .attr('fill', 'black');
 
 };
 
 //collision detection
 var collisionDetect = function() {
 
-  var enemies = gameBoard.selectAll('circle.enemy')
+  var enemies = gameBoard.selectAll('image.enemy')
     .each(function(d, i) {
-      
+
       var playerPosX = player.x + 10;
       var playerPosY = player.y + 10;
 
-      var distance = Math.sqrt(((playerPosX - d.x) * (playerPosX - d.x)) + ((playerPosY - d.y) * (playerPosY - d.y)));
+      var enPosX = d.x + 6;
+      var enPoxY = d.y + 6;
+
+      var distance = Math.sqrt(((playerPosX - enPosX) * (playerPosX - enPosX)) + ((playerPosY - enPoxY) * (playerPosY - enPoxY)));
       
       if(distance < 22) {
         updateBestScore();
         gameStats.score = 0;
        
         if(gameOptions.canCollide === true) {
+          console.log('collision!');
           gameStats.collisions++;
           updateCollisions();
           gameOptions.canCollide = false;
@@ -113,8 +121,8 @@ var collisionDetect = function() {
 render(createEnemies());
 player.render(gameBoard);
 
-setInterval(function(){
-  return render(createEnemies());
+setTimeout(function(){
+  render(createEnemies());
 }, 2000);
  
 //update score based on time elapsed without collision
