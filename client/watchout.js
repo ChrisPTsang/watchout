@@ -95,7 +95,7 @@ var collisionDetect = function() {
   var enemies = gameBoard.selectAll('image.enemy')
     .each(function(d, i) {
 
-      var playerPosX = player.x-15;
+      var playerPosX = player.x-10;
       var playerPosY = player.y-10;
 
       var enPosX = d.x;
@@ -103,8 +103,9 @@ var collisionDetect = function() {
 
       var distance = Math.sqrt(((playerPosX - enPosX) * (playerPosX - enPosX)) + ((playerPosY - enPoxY) * (playerPosY - enPoxY)));
       
-      if(distance < 22) {
-        gameBoard.style('background-color', 'red');
+      if(distance < 25) {
+        // gameBoard.style('background-color', 'red');
+        
 
         if(gameOptions.canCollide === true) {
           console.log('collision!');
@@ -113,8 +114,20 @@ var collisionDetect = function() {
           updateBestScore();
           gameStats.score = 0;
           gameOptions.canCollide = false;
+
+          gameBoard.append('svg:image')
+          .attr({
+            'xlink:href': 'xplode.gif',
+            class: 'xplode',
+            x: playerPosX - 10,
+            y: playerPosY - 10,
+            height: 69,
+            width: 45
+          });
+
           setTimeout(function() {
-            gameBoard.style('background-color', 'black');
+            // gameBoard.style('background-color', 'black');
+            gameBoard.select('.xplode').remove();
             gameOptions.canCollide = true;
           }, 500);
         }
@@ -133,12 +146,12 @@ gameBoard.on('mousemove', function() {
   player.y = loc[1];
 
   d3.select('.player').attr({
-    x: player.x-15,
-    y: player.y-15
+    x: player.x-25,
+    y: player.y-25
   });
 });
 
-setTimeout(function(){
+setInterval(function(){
   render(createEnemies());
 }, 2000);
  

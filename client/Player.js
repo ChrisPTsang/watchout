@@ -9,8 +9,8 @@ var Player = function(width, height) {
 Player.prototype.render = function(to) {
   this.player = to.append('svg:image')
     .attr('xlink:href', 'alienblaster.png')
-    .attr('width', 30)
-    .attr('height', 30)
+    .attr('width', 50)
+    .attr('height', 50)
     .attr('class', 'player')
     .attr('fill', this.fill)
     .attr('x', this.width / 2)
